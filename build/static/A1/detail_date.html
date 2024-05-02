@@ -1,0 +1,55 @@
+<!-- static/X75/detail_date.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Date</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Detail Date</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Date on Excel</th>
+                <th>Lot</th>
+                <th>Status</th>
+                <th>Data number</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in date %}
+                <tr>
+                    <td>{{ entry.date_on_excel }}</td>
+                    <td>{{ entry.lot }}</td>
+                    <td>
+                        {% if entry.status %}
+                            Chạy
+                        {% else %}
+                            Dừng
+                        {% endif %}
+                    </td>
+                    {% with url_name=name_space|add:'_detail_data' %}
+                    <td><a href="{% url url_name entry.id %}">View Data</a></td>
+                    {% endwith %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

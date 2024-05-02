@@ -1,0 +1,364 @@
+{% extends 'static/base.html' %}
+
+{% block content %}
+<!-- ######################################################################### -->
+<style>
+.search-popup {
+    display: none;
+    position: absolute;
+    z-index: 999;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    left: -100px; 
+    border-radius: 10px;
+}
+
+.search-popup.active {
+    display: block;
+}
+
+#search_container {
+    position: relative;
+}
+
+#search_popup {
+    top: calc(100% + 10px);
+    left: -100px; /* Điều chỉnh giá trị left ở đây */
+}
+
+</style>
+<div class="container-fluid pt-4 px-4">
+    <div class="bg-light text-center rounded p-4">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            
+            <h6 class="mb-0">DỮ LIỆU NGÀY SẢN XUẤT</h6>
+
+            <form class="d-none d-md-flex ms-4">
+                <input class="form-control border-0" type="text" name="query" placeholder="Tìm kiếm" id="search_input" oninput="searchDate()">
+            </form>
+            <div id="search_popup" class="search-popup">
+                <div id="search_results"></div>
+            </div>             
+            <br>
+            <a href="{{ request.META.HTTP_REFERER }}"><i class="fas fa-arrow-left"></i> Back</a>
+            <button class="btn btn-success m-2" id="deleteBtn">Delete</button>
+        </div>
+        <div class="table-responsive">
+            <table class="table text-start align-middle table-bordered table-hover mb-0">
+                <thead>
+                    <tr class="text-dark">
+                        <th>Ngày sản xuất</th>
+                        <th>Ca</th>
+                        <th>Trạng thái hoạt động</th>                       
+                        <th>Bắt đầu ca</th>
+                        <th>Kết thúc ca</th>
+                        <th>Thời gian hoạt động</th>  
+                        <th>Dữ liệu kiểm xuất (Real-time)</th> 
+                        <th>Lưu động đầu kỳ</th>   
+                        <th scope="col">Check Box</th>                                                                      
+                    </tr>
+                </thead>
+                <tbody id="date-table-body">
+                {% for entry in date %}
+                    <tr id="row{{ entry.id }}">
+                        <td id= 'client_id' style="display: none;">{{ entry.client_id }}</td>
+                        <td>{{ entry.date_on_excel }}</td>
+                        <td>{{ entry.lot }}</td>
+                        <td>
+                            {% if entry.status %}
+                                Hoạt Động
+                            {% else %}
+                                Không Hoạt Động
+                            {% endif %}
+                        </td>                               
+                        <td>{{entry.shift_start_time}}</td>
+                        <td>{{entry.shift_end_time}}</td>
+                        <td>{{ entry.total_operate_time }}</td>
+                        {% with url_name=name_space|add:'_detail_data' %}
+                        <td>    
+                            {% comment %}
+                            <form action="{% url url_name entry.id %}" method="GET">
+                                {% csrf_token %}
+                                <button class="btn btn-primary m-0" type="submit">view</button>
+                            </form>
+                            {% endcomment %}
+                            <a href="{% url url_name entry.id %}">view  <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+                        {% endwith %}
+                        <td>
+                            {% comment %}
+                            <form action="#" method="GET">
+                                {% csrf_token %}
+                                <button class="btn btn-primary m-0" type="submit">view  </button>
+                            </form>
+                            {% endcomment %}
+                            <a href="#">view <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+                        <td><input class="form-check-input deleteCheckbox" type="checkbox" value="{{ entry.id }}"></td>
+                    </tr>
+                {% endfor %}
+                </tbody>                            
+            </table>
+            <div id="pagination"></div>
+        </div>
+    </div>
+
+    <div class="container-fluid pt-4 px-4">
+        <div class="bg-light text-center rounded p-4">
+            <div>
+                <h5>BIỂU ĐỒ BIỂU THỊ TỶ LỆ PHẾ PHẨM KIỂM XUẤT 10 LOT GẦN NHẤT</h5>
+            </div>
+            <br>
+            <canvas id="hothanhdat"></canvas>
+            <br></br>
+            <i class="bi bi-exclamation-triangle"></i> <a href=""> Các cột có tỷ lệ phế phẩm kiểm xuất cao bất thường sẽ có màu đỏ</a>
+        </div>
+    </div>
+</div>
+            
+<!--#########################################################################-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/1.0.2/chartjs-plugin-annotation.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+<script>
+function searchDate() {
+    var query = document.getElementById('search_input').value.trim();
+    if (query === '') {
+        document.getElementById('search_popup').style.display = 'none';
+        return;
+    }
+    $.ajax({
+        url: '/detail/ccai0004_search/',
+        type: 'GET',
+        data: { query: query },
+        dataType: 'json',
+        success: function(data) {
+            var searchResultsDiv = document.getElementById('search_results');
+            searchResultsDiv.innerHTML = '';
+            if (data.length > 0) {
+                for (var i = 0; i < data.length; i++) {
+                    var date = data[i].date;
+                    var lot = data[i].lot;
+                    var idDateUrl = data[i].id_date_url;
+                    var resultDiv = document.createElement('div');
+                    resultDiv.innerHTML = '<a href="' + idDateUrl + '">' + date + ' - Ca ' + lot + '</a>';
+                    searchResultsDiv.appendChild(resultDiv);
+                }          
+                var searchInputRect = document.getElementById('search_input').getBoundingClientRect();
+                var searchPopup = document.getElementById('search_popup');
+                searchPopup.style.display = 'block';
+                searchPopup.style.left = searchInputRect.left + 'px';
+                searchPopup.style.top = (searchInputRect.bottom + 10) + 'px';
+            } else {
+                document.getElementById('search_popup').style.display = 'none';
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error(xhr.responseText);
+        }
+    });
+}
+
+document.getElementById("deleteBtn").addEventListener("click", function() {
+    var selectedIds = [];
+    var checkboxes = document.querySelectorAll('.deleteCheckbox:checked');
+    checkboxes.forEach(function(checkbox) {
+        selectedIds.push(checkbox.value);
+    });
+
+    if (selectedIds.length === 0) {
+        alert("Please select at least one record to delete.");
+        return;
+    }
+
+    if (confirm("Are you sure you want to delete selected records?")) {
+        $.ajax({
+            url: "/detail/ccai0004_delete_selected_records/",
+            type: "POST",
+            data: {
+                selectedIds: selectedIds,
+                csrfmiddlewaretoken: "{{ csrf_token }}"
+            },
+            success: function(response) {
+                alert(response.message);
+                selectedIds.forEach(function(id) {
+                    var row = document.getElementById("row" + id);
+                    if (row) {
+                        row.remove();                        
+                    }
+                });
+                location.reload()
+            },
+            error: function(xhr, status, error) {
+                alert("An error occurred while processing your request.");
+                console.error(xhr.responseText);
+            }
+        });
+    }
+});
+
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
+
+<script>
+    var socket = new WebSocket('ws://localhost:8000/ws/realtime_date_table/ccai0004/'+ $('#client_id').text() + '/');
+    socket.onmessage = function(event) {
+        var data = JSON.parse(event.data);
+        console.log(data)
+        updateTable(data);
+    };
+    function updateTable(data) {
+        $('#date-table-body').empty();
+        data.forEach(function(entry) {
+            var status = entry.status ? "Hoạt Động" : "Không Hoạt Động";
+            var html = '<tr id="row' + entry.id + '">' +
+                            '<td id="client_id" style="display: none;">' + entry.client_id + '</td>' +
+                            '<td>' + entry.date_on_excel + '</td>' +
+                            '<td>' + entry.lot + '</td>' +
+                            '<td>' + status + '</td>' +
+                            '<td>' + entry.shift_start_time + '</td>' +
+                            '<td>' + entry.shift_end_time + '</td>' +
+                               '<td>' + entry.total_operate_time + '</td>' +
+                            '<td>' +
+                                '<a href="' + entry.detail_url + '">view  <i class="bi bi-eye"></i>' +
+                            '</td>' +
+                            '<td>' +
+                                '<a href="#">view <i class="bi bi-eye"></i>' +
+                            '</td>' +
+                            '<td><input class="form-check-input deleteCheckbox" type="checkbox" value="' + entry.id + '"></td>' +
+                        '</tr>';
+            $('#date-table-body').append(html);
+            
+        });
+    }
+</script>
+
+<script>
+var myChart;
+var socket = new WebSocket('ws://localhost:8000/ws/realtime_date_chart/ccai0004/' + parseFloat(document.getElementById('client_id').textContent) + '/');
+socket.onmessage = function(event) {
+    var data = JSON.parse(event.data);
+    console.log(data);
+    drawChart(data);
+};
+function drawChart(data) {
+    const yLineValues = [300, 300, 300, 300, 300,300];
+    var labels = [];
+    var tong_so_luong_sx = [];
+    var tong_so_luong_pp = [];
+    var tong_pp_pdn = [];
+    for (var i = 0; i < data.dat_and_last_records.length; i++){
+        var item = data.dat_and_last_records[i];
+        var label = item.date_on_excel + "_" + item.lot;   
+        labels.push(label);
+        
+        var lddk_records_pp_pdn = [];
+        if (item.lddk_records && item.lddk_records.length > 0) {
+            for (var j = 0; j < item.lddk_records.length; j++) {
+                lddk_records_pp_pdn.push(item.lddk_records[j].tong_pp_pdn);
+            }
+        } else {
+            lddk_records_pp_pdn.push(0);
+        }
+        tong_pp_pdn.push(lddk_records_pp_pdn);
+
+        if (item.last_record) {
+            tong_so_luong_sx.push(item.last_record.tong_so_luong_sx);
+            tong_so_luong_pp.push(item.last_record.tong_so_luong_pp);
+            var backgroundColor;
+            if (item.last_record.tong_so_luong_pp > 500) {                       
+                backgroundColor = "rgba(255, 0, 0, 0.5)";
+            } else {
+                backgroundColor = "rgba(11, 156, 49, 0.5)";
+            }
+        } else {
+            tong_so_luong_sx.push(0);
+            tong_so_luong_pp.push(0);
+        }
+    }
+    if (!myChart){
+    var ctx = document.getElementById("hothanhdat").getContext("2d");
+    myChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: "Tổng số lượng sản xuất",
+                    data: tong_so_luong_sx,
+                    backgroundColor: "rgba(0,128,0, 0.2)",
+                    borderColor: "rgba(0,128,0, 2)",
+                    borderWidth: 1,
+                    fill: true
+                },
+                {
+                    label: 'Line Dataset',
+                    data: tong_so_luong_pp,
+                    type: 'line',
+                    fill: false,
+                    borderColor: 'rgba(255,0,0, 3)',
+                    borderWidth: 2,
+                    pointRadius: 2,
+                    lineTension : 0,
+                    datalabels: {
+                        display: true,
+                        align: 'top',
+                        color: 'rgba(54, 162, 235, 10)'
+                }} ,
+                {
+                    label: "Tổng phế phẩm máy kiểm xuất",
+                    data: tong_so_luong_pp,
+                    backgroundColor: backgroundColor,
+                    borderColor: backgroundColor,
+                    borderWidth: 1,
+                    fill: true
+                },
+                {
+                    label: "Tổng phế phẩm phán định nhầm",
+                    data: tong_pp_pdn,
+                    backgroundColor: "rgba(75, 192, 192, 0.2)",
+                    borderColor: "rgba(75, 192, 192, 1)",
+                    borderWidth: 1,
+                    fill: true
+                } 
+            ],
+        },
+        options: {
+            responsive: true,
+            scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+            plugins: {
+                datalabels: {
+                    anchor: 'start',
+                    align: 'top',
+                    formatter: Math.round,
+                    color: 'rgba(54, 162, 235, 1)',
+                    font: {
+                    weight: 'bold'
+                    }
+                }
+            }
+        },
+    });
+    } 
+    else {
+        myChart.data.labels = labels;
+        myChart.data.datasets[0].data = tong_so_luong_sx;
+        myChart.data.datasets[1].data = tong_so_luong_pp;
+        myChart.data.datasets[2].data = tong_so_luong_pp;
+        myChart.update();
+    }
+}
+</script>
+
+
+</body>
+
+</html>
+
+{% endblock %}

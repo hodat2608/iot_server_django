@@ -1,0 +1,76 @@
+<!-- static/X75/home.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List of Clients</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .offline-dot {
+            height: 10px;
+            width: 10px;
+            border-radius: 50%;
+            background-color: red;
+            display: inline-block;
+        }
+        .online-dot {
+            height: 10px;
+            width: 10px;
+            border-radius: 50%;
+            background-color: green;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <h1>List of Clients</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Line</th>
+                <th>Port</th>
+                <th>Host</th>
+                <th>Status</th>
+                <th>Folder Path</th>
+                <th>Data</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for client in clients %}
+                <tr>
+                    <td>{{ client.name_client }}</td>
+                    <td>{{ client.line }}</td>
+                    <td>{{ client.port }}</td>
+                    <td>{{ client.host }}</td>
+                    <td>
+                        {% if client.status %}
+                            <span class="online-dot"></span> Online
+                        {% else %}
+                            <span class="offline-dot"></span> Offline
+                        {% endif %}
+                    </td>
+                    <td>{{ client.folder_path }}</td>
+                    {% with url_name=client.name_client|add:'_detail_date' %}
+                        <td><a href="{% url url_name client.id %}">View Data</a></td>
+                    {% endwith %}
+
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

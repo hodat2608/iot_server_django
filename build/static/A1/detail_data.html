@@ -1,0 +1,71 @@
+<!-- static/X75/detail_data.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Data</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        img {
+            max-width: 100px;
+            max-height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Detail Data</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Ngày Sản Xuất</th>
+                <th>Giờ Lưu Dữ Liệu</th>
+                <th>Tổng Số Lượng Sản Xuất</th>
+                <th>Tổng Số Lượng Phế Phẩm Kiểm Xuất</th>
+                <th>Tay Chổi</th>
+                <th>Chấu Điện</th>
+                <th>Bụi Chì</th>
+                <th>Di vật</th>
+                <th>Cacbon</th>
+                <th>Mẻ đế</th>
+                <th>Phế Phẩm Khác</th>
+                <th>Tỷ Lệ Phán Định Nhầm</th>
+                <th>Lưu Xuất</th>
+                <th>Hình ảnh Lưu xuất</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in data %}
+                <tr>
+                    <td>{{ entry.ngay_san_xuat }}</td>
+                    <td>{{ entry.gio_luu_du_lieu }}</td>
+                    <td>{{ entry.tong_sl_sx }}</td>
+                    <td>{{ entry.tong_sl_pp_kx }}</td>
+                    <td>{{ entry.tay_choi }}</td>
+                    <td>{{ entry.chau_dien }}</td>
+                    <td>{{ entry.buichi }}</td>
+                    <td>{{ entry.divat }}</td>
+                    <td>{{ entry.cacbon }}</td>
+                    <td>{{ entry.me_de }}</td>
+                    <td>{{ entry.pp_khac }}</td>
+                    <td>{{ entry.ty_le_pdn }}</td>
+                    <td>{{ entry.luu_xuat }}</td>   
+                    <td>No Image</td>            
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,0 +1,290 @@
+
+{% extends 'static/base.html' %}
+
+{% block content %}
+<!-- ######################################################################### -->
+<div class="container-fluid pt-4 px-4" >
+    <div class="bg-light text-center rounded p-4" style="width: 100%;text-align: left;">
+        {% with url_name=name_space|add:'_nhap_lddk' %}
+        <form action="{% url url_name date_id %}" method="post" enctype="multipart/form-data">
+        {% endwith %}       
+            {% csrf_token %}
+            <div class="d-flex align-items-center justify-content-between mb-4" style="text-align: center;">
+                <h6 class="mb-0">Cập nhật dữ liệu lưu động đầu kỳ</h6>
+                <button class="btn btn-primary m-2" type="submit">Submit</button>
+            </div>
+            <div class="table-responsive">
+                <table class="table text-start align-middle table-bordered table-hover mb-0 " style="width: 100%;">
+                    {% if data_lddk.qc_choi == 0 and data_lddk.qc_chau == 0 %}
+                    <thead>
+                        <tr class="text-dark">                                                                         
+                            <th>Phán định quy cách chổi</th>
+                            <th>Phán định NG chổi</th>
+                            <th>Phán định nhầm chổi</th>
+                            <th>Phán định quy cách chấu</th>
+                            <th>Phán định NG chấu</th>
+                            <th>Phán định nhầm chấu</th>
+                            <th>Phán định quy cách bụi chì chổi</th>
+                            <th>Phán định NG bụi chì chổi</th>
+                            <th>Phán định nhầm bụi chì chổi</th>
+                            <th>Phán định quy cách bụi chì chấu</th>
+                            <th>Phán định NG bụi chì chấu</th>
+                            <th>Phán định nhầm bụi chì chấu</th>
+                            <th>Phán định quy cách pp khác</th>
+                            <th>Phán định NG pp khác</th>
+                            <th>Phán định nhầm pp khác</th>   
+                            <th>Lưu xuất</th>   
+                            <th>Hình ảnh Lưu xuất</th> 
+                            <th>Ghi chú</th>                                 
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>                                                                   
+                            <td><input type="number" value="{{ data_lddk.qc_choi }}" name="qc_choi"></td>
+                            <td><input type="number" value="{{ data_lddk.ng_choi }}" name="ng_choi"></td>
+                            <td><input type="number" value="{{ data_lddk.nham_choi }}" name="nham_choi"></td>
+                            <td><input type="number" value="{{ data_lddk.qc_chau }}" name="qc_chau"></td>
+                            <td><input type="number" value="{{ data_lddk.ng_chau }}" name="ng_chau"></td>
+                            <td><input type="number" value="{{ data_lddk.nham_chau }}" name="nham_chau"></td>
+                            <td><input type="number" value="{{ data_lddk.qc_bc_choi }}" name="qc_bc_choi"></td> 
+                            <td><input type="number" value="{{ data_lddk.ng_bc_choi }}" name="ng_bc_choi"></td>
+                            <td><input type="number" value="{{ data_lddk.nham_bc_choi }}" name="nham_bc_choi"></td>  
+                            <td><input type="number" value="{{ data_lddk.qc_bc_chau }}" name="qc_bc_chau"></td>
+                            <td><input type="number" value="{{ data_lddk.ng_bc_chau }}" name="ng_bc_chau"></td> 
+                            <td><input type="number" value="{{ data_lddk.nham_bc_chau }}" name="nham_bc_chau"></td>
+                            <td><input type="number" value="{{ data_lddk.qc_pp_khac }}" name="qc_pp_khac"></td>  
+                            <td><input type="number" value="{{ data_lddk.ng_pp_khac }}" name="ng_pp_khac"></td>
+                            <td><input type="number" value="{{ data_lddk.nham_pp_khac }}" name="nham_pp_khac"></td> 
+                            <td><input type="number" value="{{ data_lddk.luu_xuat }}" name="luu_xuat"></td>  
+                            <td><input type="file" value="{{ data_lddk.luu_xuat_image }}" name="luu_xuat_image"></td>
+                            <td><input type="text" value="{{ data_lddk.note }}" name="note"></td>                                 
+                        </tr>                          
+                    </tbody>
+                    {% else %}
+                    <thead>
+                        <tr class="text-dark">    
+                            <th>Tổng số lượng sản xuất</th>
+                            <th>Tổng SL kiểm xuất</th>                                                                     
+                            <th>Quy cách chổi</th>
+                            <th>NG chổi</th>
+                            <th>Nhầm chổi</th>
+                            <th>Quy cách chấu</th>
+                            <th>NG chấu</th>
+                            <th>Nhầm chấu</th>
+                            <th>Quy cách bụi chì chổi</th>
+                            <th>NG bụi chì chổi</th>
+                            <th>Nhầm bụi chì chổi</th>
+                            <th>Quy cách bụi chì chấu</th>
+                            <th>NG bụi chì chấu</th>
+                            <th>Nhầm bụi chì chấu</th>
+                            <th>Quy cách pp khác</th>
+                            <th>NG PP khác</th>
+                            <th>Nhầm pp khác</th>   
+                            <th>Tổng phán định QC</th>
+                            <th>Tổng phán định NG</th>
+                            <th>Tổng phán định Nhầm</th> 
+                            <th>Lưu xuất</th>   
+                            <th>Hình ảnh Lưu xuất</th> 
+                            <th>Ghi chú</th>                                 
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>  
+                            <td id= 'slsx'>{{ data_lddk.slsx }}</td>                                                                 
+                            <td id= 'slpp'>{{ data_lddk.slpp }}</td>                                 
+                            <td id= 'qc_choi'>{{ data_lddk.qc_choi }}</td>
+                            <td id= 'ng_choi'>{{ data_lddk.ng_choi }}</td>
+                            <td id= 'nham_choi'>{{ data_lddk.nham_choi }}</td>
+                            <td id= 'qc_chau'>{{ data_lddk.qc_chau }}</td>
+                            <td id= 'ng_chau'>{{ data_lddk.ng_chau }}</td>
+                            <td id= 'nham_chau'>{{ data_lddk.nham_chau }}</td>
+                            <td id= 'qc_bc_choi'>{{ data_lddk.qc_bc_choi }}</td> 
+                            <td id= 'ng_bc_choi'>{{ data_lddk.ng_bc_choi }}</td>
+                            <td id= 'nham_bc_choi'>{{ data_lddk.nham_bc_choi }}</td>  
+                            <td id= 'qc_bc_chau'>{{ data_lddk.qc_bc_chau }}</td>
+                            <td id= 'ng_bc_chau'>{{ data_lddk.ng_bc_chau }}</td> 
+                            <td id= 'nham_bc_chau'>{{ data_lddk.nham_bc_chau }}</td>
+                            <td id= 'qc_pp_khac'>{{ data_lddk.qc_pp_khac }}</td>  
+                            <td id= 'ng_pp_khac'>{{ data_lddk.ng_pp_khac }}</td>
+                            <td id= 'nham_pp_khac'>{{ data_lddk.nham_pp_khac }}</td> 
+                            <td id= 'tong_pp_qc'>{{ data_lddk.tong_pp_qc }}</td>  
+                            <td id= 'tong_pp_cong_doan'>{{ data_lddk.tong_pp_cong_doan }}</td>
+                            <td id= 'tong_pp_pdn'>{{ data_lddk.tong_pp_pdn }}</td> 
+                            <td id= 'luu_xuat'>{{ data_lddk.luu_xuat }}</td>  
+                            <td id= ''>{{ data_lddk.luu_xuat_image }}</td>
+                            <td id= ''>{{ data_lddk.note }}</td>                                
+                        </tr>   
+                        <tr>                                                                                     
+                            <td id= 'percent_slsx'>{{ data_lddk.slsx }} </td>
+                            <td id= 'percent_slpp'></td>          
+                            <td id= 'percent_qc_choi'></td>
+                            <td id= 'percent_ng_choi'></td>
+                            <td id= 'percent_nham_choi'></td>
+                            <td id= 'percent_qc_chau'></td>
+                            <td id= 'percent_ng_chau'></td>
+                            <td id= 'percent_nham_chau'></td>
+                            <td id= 'percent_qc_bc_choi'></td> 
+                            <td id= 'percent_ng_bc_choi'></td>
+                            <td id= 'percent_nham_bc_choi'></td>  
+                            <td id= 'percent_qc_bc_chau'></td>
+                            <td id= 'percent_ng_bc_chau'></td> 
+                            <td id= 'percent_nham_bc_chau'></td>
+                            <td id= 'percent_qc_pp_khac'></td>  
+                            <td id= 'percent_ng_pp_khac'></td>
+                            <td id= 'percent_nham_pp_khac'></td> 
+                            <td id= 'percent_tong_pp_qc'></td>  
+                            <td id= 'percent_tong_pp_cong_doan'></td>
+                            <td id= 'percent_tong_pp_pdn'></td> 
+                            <td id= 'percent_luu_xuat'></td>  
+                            <td id= ''>{{ data_lddk.luu_xuat_image }}</td>
+                            <td id= ''>{{ data_lddk.note }}</td>                                
+                        </tr>                         
+                    </tbody>
+                    {% endif %}
+                </table>                
+            </div>
+        </form>
+        <br></br>
+    <div class="d-flex align-items-center justify-content-between mb-4" style="text-align: center;">
+        <h6 class="mb-0">Biểu đồ biểu thị tỷ lệ phế phẩm</h6>
+    </div>
+    <canvas id="myChart"></canvas>   
+    </div>  
+</div>
+<!-- ######################################################################### -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var slsx = parseFloat(document.getElementById('slsx').textContent);
+    var slpp = parseFloat(document.getElementById('slpp').textContent);       
+    var ng_choi = parseFloat(document.getElementById('ng_choi').textContent);
+    var nham_choi = parseFloat(document.getElementById('nham_choi').textContent);
+    var ng_chau = parseFloat(document.getElementById('ng_chau').textContent);
+    var nham_chau = parseFloat(document.getElementById('nham_chau').textContent);
+    var ng_bc_choi = parseFloat(document.getElementById('ng_bc_choi').textContent);
+    var nham_bc_choi = parseFloat(document.getElementById('nham_bc_choi').textContent);
+    var ng_bc_chau = parseFloat(document.getElementById('ng_bc_chau').textContent);
+    var nham_bc_chau = parseFloat(document.getElementById('nham_bc_chau').textContent);
+    var ng_pp_khac = parseFloat(document.getElementById('ng_pp_khac').textContent);
+    var nham_pp_khac = parseFloat(document.getElementById('nham_pp_khac').textContent);
+    var tong_pp_cong_doan = parseFloat(document.getElementById('tong_pp_cong_doan').textContent);
+    var tong_pp_pdn = parseFloat(document.getElementById('tong_pp_pdn').textContent);
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['số lượng phế phẩm', 'NG chổi', 'Nhầm chổi', 'NG chấu', 'nhầm chấu', 'NG bụi chì chổi', 'nhầm bụi chì chổi', 'NG bụi chì chấu', 'nhầm bụi chì chấu', 'NG pp khác', 'nhầm pp khác', 'Tổng PP PD NG', 'Tổng PP PD Nhầm'],
+            datasets: [{
+                label: 'PCS',
+                data: [slpp,ng_choi,nham_choi ,ng_chau,nham_chau,ng_bc_choi,nham_bc_choi,ng_bc_chau,nham_bc_chau,ng_pp_khac,nham_pp_khac,tong_pp_cong_doan,tong_pp_pdn],
+                backgroundColor: [                       
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)'
+                ],
+                borderColor: [ 
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)'                            
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    var slsx = parseFloat(document.getElementById('slsx').textContent);
+    var slpp = parseFloat(document.getElementById('slpp').textContent);
+    var qc_choi = parseFloat(document.getElementById('qc_choi').textContent);
+    var ng_choi = parseFloat(document.getElementById('ng_choi').textContent);
+    var nham_choi = parseFloat(document.getElementById('nham_choi').textContent);
+    var qc_chau = parseFloat(document.getElementById('qc_chau').textContent);
+    var ng_chau = parseFloat(document.getElementById('ng_chau').textContent);
+    var nham_chau = parseFloat(document.getElementById('nham_chau').textContent);
+    var qc_bc_choi = parseFloat(document.getElementById('qc_bc_choi').textContent);
+    var ng_bc_choi = parseFloat(document.getElementById('ng_bc_choi').textContent);
+    var nham_bc_choi = parseFloat(document.getElementById('nham_bc_choi').textContent);
+    var qc_bc_chau = parseFloat(document.getElementById('qc_bc_chau').textContent);
+    var ng_bc_chau = parseFloat(document.getElementById('ng_bc_chau').textContent);
+    var nham_bc_chau = parseFloat(document.getElementById('nham_bc_chau').textContent);
+    var qc_pp_khac = parseFloat(document.getElementById('qc_pp_khac').textContent);
+    var ng_pp_khac = parseFloat(document.getElementById('ng_pp_khac').textContent);
+    var nham_pp_khac = parseFloat(document.getElementById('nham_pp_khac').textContent);
+    var tong_pp_qc = parseFloat(document.getElementById('tong_pp_qc').textContent);
+    var tong_pp_cong_doan = parseFloat(document.getElementById('tong_pp_cong_doan').textContent);
+    var tong_pp_pdn = parseFloat(document.getElementById('tong_pp_pdn').textContent);
+    var luu_xuat = parseFloat(document.getElementById('luu_xuat').textContent);
+    var percent_slpp = (slpp / slsx * 100).toFixed(2) + "%";
+    var percent_qc_choi = (qc_choi / slsx * 100).toFixed(2) + "%";
+    var percent_ng_choi = (ng_choi / slsx * 100).toFixed(2) + "%";
+    var percent_nham_choi = (nham_choi / slsx * 100).toFixed(2) + "%";
+    var percent_qc_chau = (qc_chau / slsx * 100).toFixed(2) + "%";
+    var percent_ng_chau = (ng_chau / slsx * 100).toFixed(2) + "%";
+    var percent_nham_chau = (nham_chau / slsx * 100).toFixed(2) + "%";
+    var percent_qc_bc_choi = (qc_bc_choi / slsx * 100).toFixed(2) + "%";
+    var percent_ng_bc_choi = (ng_bc_choi / slsx * 100).toFixed(2) + "%";
+    var percent_nham_bc_choi = (nham_bc_choi / slsx * 100).toFixed(2) + "%";
+    var percent_qc_bc_chau = (qc_bc_chau / slsx * 100).toFixed(2) + "%";
+    var percent_ng_bc_chau = (ng_bc_chau / slsx * 100).toFixed(2) + "%";
+    var percent_nham_bc_chau = (nham_bc_chau / slsx * 100).toFixed(2) + "%";
+    var percent_qc_pp_khac = (qc_pp_khac / slsx * 100).toFixed(2) + "%";
+    var percent_ng_pp_khac = (ng_pp_khac / slsx * 100).toFixed(2) + "%";
+    var percent_nham_pp_khac = (nham_pp_khac / slsx * 100).toFixed(2) + "%";
+    var percent_tong_pp_qc = (tong_pp_qc / slsx * 100).toFixed(2) + "%";    
+    var percent_tong_pp_cong_doan = (tong_pp_cong_doan / slsx * 100).toFixed(2) + "%";
+    var percent_tong_pp_pdn = (tong_pp_pdn / slsx * 100).toFixed(2) + "%";
+    var percent_luu_xuat = (luu_xuat / slsx * 100).toFixed(2) + "%";
+    document.getElementById('percent_slpp').textContent = percent_slpp;
+    document.getElementById('percent_qc_choi').textContent = percent_qc_choi;
+    document.getElementById('percent_ng_choi').textContent = percent_ng_choi;
+    document.getElementById('percent_nham_choi').textContent = percent_nham_choi;
+    document.getElementById('percent_qc_chau').textContent = percent_qc_chau;
+    document.getElementById('percent_ng_chau').textContent = percent_ng_chau;
+    document.getElementById('percent_nham_chau').textContent = percent_nham_chau;
+    document.getElementById('percent_qc_bc_choi').textContent = percent_qc_bc_choi;
+    document.getElementById('percent_ng_bc_choi').textContent = percent_ng_bc_choi;
+    document.getElementById('percent_nham_bc_choi').textContent = percent_nham_bc_choi;
+    document.getElementById('percent_qc_bc_chau').textContent = percent_qc_bc_chau;
+    document.getElementById('percent_ng_bc_chau').textContent = percent_ng_bc_chau;
+    document.getElementById('percent_nham_bc_chau').textContent = percent_nham_bc_chau;    
+    document.getElementById('percent_qc_pp_khac').textContent = percent_qc_pp_khac;
+    document.getElementById('percent_ng_pp_khac').textContent = percent_ng_pp_khac;
+    document.getElementById('percent_tong_pp_qc').textContent = percent_tong_pp_qc;
+    document.getElementById('percent_nham_pp_khac').textContent = percent_nham_pp_khac;
+    document.getElementById('percent_tong_pp_cong_doan').textContent = percent_tong_pp_cong_doan;
+    document.getElementById('percent_tong_pp_pdn').textContent = percent_tong_pp_pdn;
+    document.getElementById('percent_luu_xuat').textContent = percent_luu_xuat;
+});
+</script> 
+</body>
+</html>
+{% endblock %}
+
